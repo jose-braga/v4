@@ -10,6 +10,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import PersonSection from '@/pages/person/PersonSection.vue'
 import PersonPersonal from '@/pages/person/PersonPersonal.vue'
 import PersonProfessional from '@/pages/person/PersonProfessional.vue'
+import ResetPasswordView from '@/pages/person/ResetPasswordView.vue'
 
 
 const router = createRouter({
@@ -49,6 +50,12 @@ const router = createRouter({
         },
         { path: '', redirect: '/person/personal' }
       ]
+    },
+    {
+        path: '/reset-password',
+        name: 'reset-password',
+        component: ResetPasswordView,
+        meta: { title: 'Reset Password', public: true, standalone: true },
     },
   ],
 })
