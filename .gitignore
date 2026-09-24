@@ -87,7 +87,7 @@ Dockerfile.prod
 .vscode/*
 !.vscode/extensions.json
 temp/
-database/
+db/
 prod_settings/
 api/images/people/
 api/documents/
