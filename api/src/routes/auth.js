@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken'
 import { pool } from '../db.js'
 import { requireAuth } from '../middleware/requireAuth.js'
 import { sendPasswordResetEmail } from '../emailer.js'
+import { issueSession } from '../utils/session.js'
 
 const router = Router()
 
@@ -44,25 +45,14 @@ router.post('/login', async (req, res) => {
             return res.status(401).json({ message: 'Invalid username or password.' })
         }
 
-        const token = jwt.sign(
-            { sub: user.id, username: user.username, person_id: user.person_id },
-            JWT_SECRET,
-            { expiresIn: '7d' }
-        )
-
-        res.cookie('token', token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production', // see note below
-            sameSite: 'lax',
-            maxAge: TOKEN_MAX_AGE_MS,
-            path: '/',
-        })
+        const sessionExpiresAt = issueSession(res, user)
 
         return res.json({
                 id: user.id,
                 username: user.username,
                 person_id: user.person_id,
-                photo_url: user.photo_url
+                photo_url: user.photo_url,
+                sessionExpiresAt,
             })
     } catch (err) {
         console.error('Login error:', err)
@@ -93,6 +83,7 @@ router.get('/me', requireAuth, async (req, res) => {
             username: user.username,
             person_id: user.person_id,
             photo_url: user.photo_url ?? null,
+            sessionExpiresAt: req.user.tokenExp * 1000, // JWT exp is in seconds; JS Date math wants ms
         })
     } catch (err) {
         console.error('Error fetching user info:', err)
@@ -137,30 +128,44 @@ router.post('/change-password', async (req, res) => {
         const hashedPassword = await bcrypt.hash(newPassword, 10)
         await pool.query('UPDATE users SET password = ? WHERE id = ?', [hashedPassword, user.id])
 
-         const token = jwt.sign(
-            { sub: user.id, username: user.username, person_id: user.person_id },
-            JWT_SECRET,
-            { expiresIn: '7d' }
-        )
-
-        res.cookie('token', token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production', // see note below
-            sameSite: 'lax',
-            maxAge: TOKEN_MAX_AGE_MS,
-            path: '/',
-        })
+        const sessionExpiresAt = issueSession(res, user) // Re-issue session after password change
 
         return res.json({
                 id: user.id,
                 username: user.username,
                 person_id: user.person_id,
-                photo_url: user.photo_url
+                photo_url: user.photo_url,
+                sessionExpiresAt,
             })
     } catch (err) {
         console.error('Error changing password:', err)
         return res.status(500).json({ message: 'Something went wrong. Please try again.' })
     }
+})
+
+router.post('/refresh', requireAuth, async (req, res) => {
+    const [rows] = await pool.query(
+            'SELECT users.id, users.username, users.password,'
+            + ' people.id AS person_id, personal_photo.url AS photo_url'
+            + ' FROM users'
+            + ' LEFT JOIN people ON people.user_id = users.id'
+            + ' LEFT JOIN personal_photo ON personal_photo.person_id = people.id'
+            + ' WHERE users.id = ?'
+            + ' LIMIT 1',
+            [req.user.id]
+        )
+    if (rows.length === 0) return res.status(401).json({ message: 'User no longer exists.' })
+
+    const user = rows[0]
+    const sessionExpiresAt = issueSession(res, user) // reissues cookie with a fresh 7-day expiry
+
+    res.json({
+        id: user.id,
+        username: user.username,
+        person_id: user.person_id,
+        photo_url: user.photo_url,
+        sessionExpiresAt,
+    })
 })
 
 router.post('/request-password-reset', async (req, res) => {
@@ -235,7 +240,7 @@ router.post('/reset-password', async (req, res) => {
 
     try {
         const tokenHash = crypto.createHash('sha256').update(token).digest('hex')
-        console.log('Token hash:', tokenHash) // Debugging line
+        // console.log('Token hash:', tokenHash) // Debugging line
         const [rows] = await pool.query(
             `SELECT id FROM users
              WHERE password_recovery = ? AND recovery_expires > UTC_TIMESTAMP()

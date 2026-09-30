@@ -26,7 +26,8 @@ export interface User {
     id: string,
     username: string,
     person_id: string,
-    photo_url?: string | null
+    photo_url?: string | null,
+    sessionExpiresAt?: number // ms
 }
 
 export async function login(payload: LoginPayload): Promise<User> {
@@ -45,6 +46,11 @@ export async function changePassword(payload: ChangePasswordPayload): Promise<Us
 
 export async function fetchCurrentUser(): Promise<User> {
     const { data } = await apiClient.get<User>('api/auth/me')
+    return data
+}
+
+export async function refreshSession(): Promise<User> {
+    const { data } = await apiClient.post<User>('api/auth/refresh')
     return data
 }
 

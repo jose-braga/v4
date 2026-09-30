@@ -12,7 +12,12 @@ export function requireAuth(req, res, next) {
 
     try {
         const decoded = jwt.verify(token, JWT_SECRET)
-        req.user = { id: decoded.sub, username: decoded.username }
+        req.user = {
+            id: decoded.sub,
+            username: decoded.username,
+            personId: decoded.person_id,
+            tokenExp: decoded.exp
+        }
         next()
     } catch (err) {
         // Covers both expired tokens (TokenExpiredError) and tampered/invalid

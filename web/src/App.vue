@@ -18,6 +18,18 @@
       </v-alert>
       <router-view v-else />
     </v-main>
+    <v-snackbar
+        v-model="authStore.sessionWarning"
+        color="warning"
+        timeout="-1"
+        location="top right"
+    >
+        Your session will expire soon.
+        <template v-slot:actions>
+            <v-btn variant="text" @click="handleStayLoggedIn">Stay logged in</v-btn>
+            <v-btn variant="text" @click="authStore.sessionWarning = false">Dismiss</v-btn>
+        </template>
+    </v-snackbar>
   </v-app>
 </template>
 
@@ -29,4 +41,7 @@
 
   const authStore = useAuthStore()
   const route = useRoute()
+  async function handleStayLoggedIn() {
+      await authStore.refreshSession()
+  }
 </script>

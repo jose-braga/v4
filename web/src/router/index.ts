@@ -8,8 +8,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 //import Index from '@/pages/index.vue'
 import PersonSection from '@/pages/person/PersonSection.vue'
-import PersonPersonal from '@/pages/person/PersonPersonal.vue'
-import PersonProfessional from '@/pages/person/PersonProfessional.vue'
+import PersonPersonal from '@/pages/person/personal/PersonPersonal.vue'
+import PersonProfessional from '@/pages/person/professional/PersonProfessional.vue'
 import ResetPasswordView from '@/pages/person/ResetPasswordView.vue'
 
 
@@ -33,16 +33,16 @@ const router = createRouter({
             }
         },
         {
-            path: 'professional',
-            meta: { title: 'Edit your professional information' },
+            path: 'professional-academic',
+            meta: { title: 'Edit your professional and academic information' },
             components: {
                 default: PersonProfessional,
                 //help: ProfessionalTabHelp
             }
         },
         {
-            path: 'professional',
-            meta: { title: 'Edit your professional information' },
+            path: 'institutional-scientific',
+            meta: { title: 'Edit your institutional and scientific information' },
             components: {
                 default: PersonProfessional,
                 //help: ProfessionalTabHelp
