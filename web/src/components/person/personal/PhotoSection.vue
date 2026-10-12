@@ -17,16 +17,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import PhotoForm from './PhotoForm.vue'
 import type { PersonPhoto } from './PhotoForm.vue'
 import { fetchPhoto, uploadPhoto } from '@/api/person'
 import { useEditableSection } from '@/composables/useEditableSection'
+import { useTargetPersonId } from '@/composables/useTargetPersonId'
 
 
 const authStore = useAuthStore()
-const personId = computed(() => authStore.user!.person_id)
+const personId = useTargetPersonId()
 
 const { data, loading, error, success, submit } = useEditableSection<PersonPhoto, Blob>(
     () => fetchPhoto(personId.value),

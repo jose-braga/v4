@@ -4,6 +4,7 @@ import cors from 'cors'
 import authRouter from './routes/auth.js'
 import lookupsRouter from './routes/lookups.js'
 import peopleRouter from './routes/people.js'
+import managersRouter from './routes/managers.js'
 import morgan from 'morgan'
 
 const app = express()
@@ -24,6 +25,7 @@ app.use('/api/auth', authRouter)
 
 // People, labs, units, management routes
 app.use('/api/people', peopleRouter)
+app.use('/api/managers', managersRouter)
 
 // Lookup routes
 app.use('/api/lookups', lookupsRouter)

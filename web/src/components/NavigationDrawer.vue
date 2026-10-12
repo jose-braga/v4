@@ -28,6 +28,7 @@ const route = useRoute()
 const items = [
     { title: 'Myself', icon: 'mdi-account', to: '/person' },
     { title: 'On Behalf', icon: 'mdi-account-switch', to: '/person-on-behalf' },
+    { title: 'Manager', icon: 'mdi-account-tie', to: '/manager' },
 ]
 
 const activeItem = computed(() => {

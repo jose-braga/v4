@@ -53,18 +53,17 @@
             @click="changePasswordError = ''; changePasswordDialog = true"
           ></v-list-item>
           <v-list-item
+            title="Bug Report / Suggestions"
+            prepend-icon="mdi-bug"
+            @click=""
+          ></v-list-item>
+          <v-list-item
             title="Logout"
             prepend-icon="mdi-logout"
             @click="handleLogout"
           ></v-list-item>
         </v-list>
       </v-menu>
-
-      <v-tooltip text="Report bug or make suggestions" location="bottom">
-        <template v-slot:activator="{ props }">
-          <v-icon-btn icon="mdi-bug" variant="text" color="grey" v-bind="props"></v-icon-btn>
-        </template>
-      </v-tooltip>
       <v-tooltip text="Help about this page" location="bottom">
         <template v-slot:activator="{ props }">
           <v-icon-btn id="help-icon"

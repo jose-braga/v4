@@ -53,15 +53,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useAuthStore } from '@/stores/auth'
 import DataVisibilityForm from './DataVisibilityForm.vue'
 import type { DataVisibilityPayload } from './DataVisibilityForm.vue'
 import { fetchDataVisibility, updateDataVisibility } from '@/api/person'
 import { useEditableSection } from '@/composables/useEditableSection'
+import { useTargetPersonId } from '@/composables/useTargetPersonId'
 
-const authStore = useAuthStore()
-const personId = computed(() => authStore.user!.person_id)
+const personId = useTargetPersonId()
 
 const { data, loading, submitting, error, success, submit } = useEditableSection<DataVisibilityPayload>(
     () => fetchDataVisibility(personId.value),

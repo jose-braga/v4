@@ -20,15 +20,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { useAuthStore } from '@/stores/auth'
 import CoreInformationForm from './CoreInformationForm.vue'
 import type { CoreInformationPayload } from './CoreInformationForm.vue'
 import { fetchCoreInformation, updateCoreInformation } from '@/api/person'
 import { useEditableSection } from '@/composables/useEditableSection'
+import { useTargetPersonId } from '@/composables/useTargetPersonId'
 
-const authStore = useAuthStore()
-const personId = computed(() => authStore.user!.person_id)
+const personId = useTargetPersonId()
 
 const { data, loading, error, success, submit } = useEditableSection<CoreInformationPayload>(
     () => fetchCoreInformation(personId.value),

@@ -11,6 +11,8 @@ import PersonSection from '@/pages/person/PersonSection.vue'
 import PersonPersonal from '@/pages/person/personal/PersonPersonal.vue'
 import PersonProfessional from '@/pages/person/professional/PersonProfessional.vue'
 import ResetPasswordView from '@/pages/person/ResetPasswordView.vue'
+import ManagerSection from '@/pages/manager/ManagerSection.vue'
+import ManagerMembers from '@/pages/manager/ManagerMembers.vue'
 
 
 const router = createRouter({
@@ -49,6 +51,20 @@ const router = createRouter({
             }
         },
         { path: '', redirect: '/person/personal' }
+      ]
+    },
+    {
+      path: '/manager',
+      component: ManagerSection,
+      children: [
+        {
+            path: 'units/:unitSlug',
+            meta: { title: 'Current members' },
+            components: {
+                default: ManagerMembers,
+                //help: PersonalTabHelp
+            }
+        },
       ]
     },
     {
