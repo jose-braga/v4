@@ -10,6 +10,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import PersonSection from '@/pages/person/PersonSection.vue'
 import PersonPersonal from '@/pages/person/personal/PersonPersonal.vue'
 import PersonProfessional from '@/pages/person/professional/PersonProfessional.vue'
+import PersonWarehouse from '@/pages/person/warehouse/PersonWarehouse.vue'
+import PersonSpaces from '@/pages/person/spaces/PersonSpaces.vue'
 import ResetPasswordView from '@/pages/person/ResetPasswordView.vue'
 import ManagerSection from '@/pages/manager/ManagerSection.vue'
 import ManagerMembers from '@/pages/manager/ManagerMembers.vue'
@@ -48,6 +50,22 @@ const router = createRouter({
             components: {
                 default: PersonProfessional,
                 //help: ProfessionalTabHelp
+            }
+        },
+        {
+            path: 'warehouse',
+            meta: { title: 'Warehouse', feature: 'warehouse' },
+            components: {
+                default: PersonWarehouse,
+                //help: PersonalTabHelp
+            }
+        },
+        {
+            path: 'spaces',
+            meta: { title: 'Spaces', feature: 'spaces' },
+            components: {
+                default: PersonSpaces,
+                //help: PersonalTabHelp
             }
         },
         { path: '', redirect: '/person/personal' }

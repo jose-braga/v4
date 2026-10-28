@@ -11,7 +11,8 @@ export async function getPersonHierarchy(personId) {
     }
 
     const [rows] = await pool.query(
-        `SELECT DISTINCT labs.id AS lab_id, \`groups\`.id AS group_id, units.id AS unit_id
+        `SELECT DISTINCT labs.id AS lab_id, 'labs' AS node_type,
+         \`groups\`.id AS group_id, units.id AS unit_id
          FROM people_labs
          JOIN labs ON labs.id = people_labs.lab_id
          JOIN labs_groups ON labs_groups.lab_id = labs.id
@@ -22,7 +23,8 @@ export async function getPersonHierarchy(personId) {
 
          UNION
 
-        SELECT DISTINCT technicians.technician_office_id AS lab_id, NULL AS group_id, units.id AS unit_id
+        SELECT DISTINCT technicians.technician_office_id AS lab_id, 'technician_offices',
+            NULL AS group_id, units.id AS unit_id
          FROM technicians
          JOIN technician_offices ON technician_offices.id = technicians.technician_office_id
          JOIN technicians_units ON technicians_units.technician_id = technicians.id
@@ -31,7 +33,8 @@ export async function getPersonHierarchy(personId) {
 
          UNION
 
-        SELECT DISTINCT science_managers.science_manager_office_id AS lab_id, NULL AS group_id, units.id AS unit_id
+        SELECT DISTINCT science_managers.science_manager_office_id AS lab_id, 'science_manager_offices',
+             NULL AS group_id, units.id AS unit_id
          FROM science_managers
          JOIN science_manager_offices ON science_manager_offices.id = science_managers.science_manager_office_id
          JOIN science_managers_units ON science_managers_units.science_manager_id = science_managers.id
@@ -40,7 +43,8 @@ export async function getPersonHierarchy(personId) {
 
          UNION
 
-        SELECT DISTINCT people_administrative_offices.administrative_office_id AS lab_id, NULL AS group_id, units.id AS unit_id
+        SELECT DISTINCT people_administrative_offices.administrative_office_id AS lab_id, 'administrative_offices',
+             NULL AS group_id, units.id AS unit_id
          FROM people_administrative_offices
          JOIN administrative_offices ON administrative_offices.id = people_administrative_offices.administrative_office_id
          JOIN people_administrative_units ON people_administrative_units.administrative_id = people_administrative_offices.id
@@ -59,11 +63,11 @@ export async function getPersonHierarchy(personId) {
     chain.set(`people:${personId}`, { resourceType: 'people', resourceId: personId })
 
     for (const row of rows) {
-        chain.set(`labs:${row.lab_id}`, { resourceType: 'labs', resourceId: row.lab_id })
-        chain.set(`groups:${row.group_id}`, { resourceType: 'groups', resourceId: row.group_id })
+        chain.set(`${row.node_type}:${row.node_id}`, { resourceType: row.node_type, resourceId: row.node_id })
+        if (row.group_id != null)
+            chain.set(`groups:${row.group_id}`, { resourceType: 'groups', resourceId: row.group_id })
         chain.set(`units:${row.unit_id}`, { resourceType: 'units', resourceId: row.unit_id })
     }
-
     return [...chain.values()]
 }
 

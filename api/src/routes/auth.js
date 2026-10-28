@@ -6,6 +6,7 @@ import { pool } from '../db.js'
 import { requireAuth } from '../middleware/requireAuth.js'
 import { sendPasswordResetEmail } from '../emailer.js'
 import { issueSession } from '../utils/session.js'
+import { getFeatures } from '../utils/features.js'
 
 const router = Router()
 
@@ -77,12 +78,14 @@ router.get('/me', requireAuth, async (req, res) => {
         }
 
         const user = rows[0]
-
+        const features = await getFeatures(req.user.personId)
+        
         res.json({
             id: user.id,
             username: user.username,
             person_id: user.person_id,
             photo_url: user.photo_url ?? null,
+            features,
             sessionExpiresAt: req.user.tokenExp * 1000, // JWT exp is in seconds; JS Date math wants ms
         })
     } catch (err) {

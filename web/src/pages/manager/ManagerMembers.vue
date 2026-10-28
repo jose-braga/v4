@@ -233,5 +233,6 @@ async function load() {
     }
 }
 
+watch(editOpen, (isOpen) => { if (!isOpen) load() })
 watch([unitSlug, mode], load, { immediate: true })
 </script>

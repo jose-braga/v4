@@ -44,6 +44,7 @@
                 v-else
                 :visibility="data?.visibility ?? false"
                 :saving="submitting"
+                :readonly="isOnBehalf"
                 :error="error"
                 :success="success"
                 @change="submit"
@@ -57,9 +58,10 @@ import DataVisibilityForm from './DataVisibilityForm.vue'
 import type { DataVisibilityPayload } from './DataVisibilityForm.vue'
 import { fetchDataVisibility, updateDataVisibility } from '@/api/person'
 import { useEditableSection } from '@/composables/useEditableSection'
-import { useTargetPersonId } from '@/composables/useTargetPersonId'
+import { useTargetPersonId, useIsOnBehalf } from '@/composables/useTargetPersonId'
 
 const personId = useTargetPersonId()
+const isOnBehalf = useIsOnBehalf()
 
 const { data, loading, submitting, error, success, submit } = useEditableSection<DataVisibilityPayload>(
     () => fetchDataVisibility(personId.value),

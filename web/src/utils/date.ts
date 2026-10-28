@@ -8,3 +8,9 @@ export function toIsoDateString(date: Date): string {
   const day = String(date.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
 }
+
+export function fromIsoDateString(s: string | null | undefined): Date | null {
+    if (!s) return null
+    const [y, m, d] = s.slice(0, 10).split('-').map(Number)
+    return new Date(y, m - 1, d)
+}

@@ -1,14 +1,16 @@
 <!-- DataVisibilityForm.vue -->
 <template>
     <v-row class="justify-center">
-        <v-col cols="6">
+        <v-col cols="6" class="d-flex justify-center">
             <v-switch
                 :model-value="visibility"
-                label="Make my profile visible"
+                :label="readonly ? 'Data visibility authorized' : 'Make my profile visible'"
                 color="primary"
                 true-icon="mdi-check"
                 false-icon="mdi-close"
-                hide-details
+                :hide-details="!readonly"
+                :hint="readonly ? 'Only the person themselves can change this setting.' : undefined"
+                :persistent-hint="readonly"
                 :loading="saving"
                 :disabled="saving"
                 @update:model-value="onToggle"
@@ -31,6 +33,7 @@ export interface DataVisibilityPayload {
 defineProps<{
     visibility: boolean
     saving?: boolean
+    readonly?: boolean
     error?: string
     success?: string
 }>()

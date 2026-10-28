@@ -44,7 +44,8 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     async function login(payload: { username: string; password: string }) {
-        user.value = await apiLogin(payload)
+        await apiLogin(payload)
+        user.value = await fetchCurrentUser()
         scheduleSessionWarning()
     }
 
@@ -55,12 +56,14 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     async function changePassword(payload: { username: string; oldPassword: string; newPassword: string; confirmPassword: string }) {
-        user.value = await apiChangePassword(payload)
+        await apiChangePassword(payload)
+        user.value = await fetchCurrentUser()
         scheduleSessionWarning()
     }
 
     async function refreshSession() {
-        user.value = await apiRefreshSession()
+        await apiRefreshSession()
+        user.value = await fetchCurrentUser()
         scheduleSessionWarning()
     }
 

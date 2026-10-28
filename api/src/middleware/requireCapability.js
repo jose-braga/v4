@@ -10,13 +10,14 @@ const hierarchyResolvers = {
 }
 
 
-export function requireCapability(capability, resourceType, paramName) {
+export function requireCapability(capability, resourceType, paramName, { allowSelf = true } = {}) {
     return async (req, res, next) => {
         const resourceId = req.params[paramName]
 
         // Self-access shortcut: a person can always act on their own record,
         // without needing an explicit row in the permissions table.
-        if (resourceType === 'people' && String(resourceId) === String(req.user.personId)) {
+        if (allowSelf && resourceType === 'people'
+            && String(resourceId) === String(req.user.personId)) {
             return next()
         }
 

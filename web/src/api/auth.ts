@@ -28,6 +28,7 @@ export interface User {
     person_id: string,
     photo_url?: string | null,
     sessionExpiresAt?: number // ms
+    features?: string[]
 }
 
 export async function login(payload: LoginPayload): Promise<User> {

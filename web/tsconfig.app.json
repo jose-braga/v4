@@ -4,7 +4,7 @@
     "env.d.ts",
     "src/**/*",
     "src/**/*.vue"
-  ],
+, "../api/src/utils/sync.js", "../api/src/utils/validation.js"  ],
   "exclude": [
     "src/**/__tests__/*"
   ],

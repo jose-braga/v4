@@ -8,6 +8,37 @@ const router = Router()
 // Convention: every query returns at least `id` and `name`.
 const lookups = {
     countries: 'SELECT id, name FROM countries ORDER BY name',
+    'academic-institutions': `
+        SELECT
+            d.id AS id,
+            CONCAT_WS(', ',
+                NULLIF(d.name_en, ''),
+                COALESCE(NULLIF(s.shortname_en, ''), s.name_en),
+                COALESCE(NULLIF(u.shortname_en, ''), u.name_en)
+            ) AS name
+        FROM departments d
+        JOIN schools s      ON s.id = d.school_id
+        JOIN universities u ON u.id = s.university_id
+        ORDER BY u.sort_order, s.sort_order, d.sort_order, name
+    `,
+    'academic-degrees':  `SELECT id, name_en AS name FROM degrees ORDER BY sort_order`,
+    'supervisor-types':  `SELECT id, name_en AS name FROM supervisor_types ORDER BY sort_order`,
+    people:              `SELECT id, \`name\`
+                            FROM people
+                            WHERE \`name\` IS NOT NULL AND visible_public = 1
+                            ORDER BY \`name\``,
+    'situations':        `SELECT id, name_en AS name, visible, sort_order FROM situations ORDER BY sort_order`,
+    'situation-categories': `SELECT cs.id, cs.situation_id, c.name_en AS name,
+                            (cs.visible AND c.visible) AS visible,
+                            cs.sort_order
+                        FROM categories_situations cs
+                        JOIN categories c ON c.id = cs.category_id
+                        ORDER BY cs.sort_order`,
+    'fellowship-types':    `SELECT id, name FROM fellowship_types ORDER BY sort_order`,
+    'management-entities': `SELECT id, COALESCE(NULLIF(short_name,''), official_name) AS name FROM management_entities ORDER BY sort_order`,
+    'funding-agencies':    `SELECT id, official_name AS name FROM funding_agencies ORDER BY sort_order`,
+
+
 }
 
 router.get('/:name', async (req, res) => {

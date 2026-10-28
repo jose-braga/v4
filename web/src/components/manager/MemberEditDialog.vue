@@ -11,7 +11,7 @@
             </v-alert>
 
             <v-tabs v-model="tab" color="primary" class="px-3">
-                <v-tab v-for="t in tabs" :key="t.key" :value="t.key">{{ t.title }}</v-tab>
+                <v-tab v-for="t in tabs" :key="t.key" :value="t.key">{{ t.label }}</v-tab>
             </v-tabs>
             <v-divider></v-divider>
 
@@ -19,7 +19,7 @@
             <v-card-text :key="member.person_id" class="pa-4">
                 <v-window v-model="tab">
                     <v-window-item v-for="t in tabs" :key="t.key" :value="t.key">
-                        <component :is="t.component" />
+                        <component :is="tabComponents[t.key]" />
                     </v-window-item>
                 </v-window>
             </v-card-text>
@@ -28,11 +28,18 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, type Component } from 'vue'
 import type { UnitMember } from '@/api/manager'
 import { provideTargetPersonId } from '@/composables/useTargetPersonId'
+import { personTabs, type PersonTabKey } from '@/pages/person/tabs'
+import { managerOnlyTabs } from '@/components/manager/managerTabs'
 import PersonPersonal from '@/pages/person/personal/PersonPersonal.vue'
 import PersonProfessional from '@/pages/person/professional/PersonProfessional.vue'
+import PermissionsControl from '@/components/manager/PermissionsControl.vue'
+import UserSettings from '@/components/manager/UserSettings.vue'
+
+const tabs = [...managerOnlyTabs, ...personTabs ]
+type DialogTabKey = typeof tabs[number]['key']
 
 const open = defineModel<boolean>({ required: true })
 const props = defineProps<{ member: UnitMember | null }>()
@@ -41,11 +48,13 @@ provideTargetPersonId(() => String(props.member?.person_id ?? ''))
 
 const displayName = computed(() => props.member?.colloquial_name || props.member?.name || '')
 
-const tabs = [
-    { key: 'personal', title: 'Personal', component: PersonPersonal },
-    { key: 'professional-academic', title: 'Academic & Professional', component: PersonProfessional },
-    { key: 'institutional-scientific', title: 'Institutional & Scientific', component: PersonProfessional },
-]
+const tabComponents: Record<DialogTabKey, Component> = {
+    'permissions': PermissionsControl,
+    'user': UserSettings,
+    'personal': PersonPersonal,
+    'professional-academic': PersonProfessional,
+    //'institutional-scientific': PersonInstitutional,
+}
 const tab = ref('personal')
 
 watch(open, (isOpen) => {
