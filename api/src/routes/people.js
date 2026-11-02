@@ -4,6 +4,12 @@ import { requireCapability } from '../middleware/requireCapability.js'
 import { getCoreInformation, updateCoreInformation } from './controllers/people/core-information.js'
 import { getVisibility, updateVisibility } from './controllers/people/data-visibility.js'
 import { getPhoto, changePhoto } from './controllers/people/photo.js'
+import { getShortCv, updateShortCv } from './controllers/people/short-cv.js'
+import { getPersonalContacts, updatePersonalContacts } from './controllers/people/personal-contacts.js'
+import { getPersonalUrls, updatePersonalUrls } from './controllers/people/personal-urls.js'
+import { getEmergencyContacts, updateEmergencyContacts } from './controllers/people/emergency-contacts.js'
+import { getOtherEditors, updateOtherEditors } from './controllers/people/other-editors.js'
+
 import { getAcademicAffiliations, updateAcademicAffiliations,
     getWorkplaces, updateWorkplaces
  } from './controllers/people/academic-affiliations.js'
@@ -49,8 +55,53 @@ router.get('/:personId/photo',
 
 router.post('/:personId/photo',
     requireAuth, requireCapability('edit_people_data', 'people', 'personId'),
-    upload.single('photo'), changePhoto
-)
+    upload.single('photo'), changePhoto)
+
+/**
+ * Person Short CV endpoints
+ */
+router.get('/:personId/short-cv',
+    requireAuth, requireCapability('edit_people_data', 'people', 'personId'),  getShortCv)
+
+router.put('/:personId/short-cv',
+    requireAuth, requireCapability('edit_people_data', 'people', 'personId'), updateShortCv)
+
+/**
+ * Person Personal URLs
+ */
+router.get('/:personId/personal-urls',
+    requireAuth, requireCapability('edit_people_data', 'people', 'personId'),  getPersonalUrls)
+
+router.put('/:personId/personal-urls',
+    requireAuth, requireCapability('edit_people_data', 'people', 'personId'), updatePersonalUrls)
+
+/**
+ * Person Personal Contacts
+ */
+router.get('/:personId/personal-contacts',
+    requireAuth, requireCapability('edit_people_data', 'people', 'personId'),  getPersonalContacts)
+
+router.put('/:personId/personal-contacts',
+    requireAuth, requireCapability('edit_people_data', 'people', 'personId'), updatePersonalContacts)
+
+/**
+ * Person Emergency contacts
+ */
+router.get('/:personId/emergency-contacts',
+    requireAuth, requireCapability('edit_people_data', 'people', 'personId'),  getEmergencyContacts)
+
+router.put('/:personId/emergency-contacts',
+    requireAuth, requireCapability('edit_people_data', 'people', 'personId'), updateEmergencyContacts)
+
+/**
+ * Person other editors (assuming managers can edit this list)
+ */
+router.get('/:personId/other-editors',
+    requireAuth, requireCapability('edit_people_data', 'people', 'personId'),  getOtherEditors)
+
+router.put('/:personId/other-editors',
+    requireAuth, requireCapability('edit_people_data', 'people', 'personId'), updateOtherEditors)
+
 
 /**
  * Academic affiliations endpoints

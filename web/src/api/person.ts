@@ -3,6 +3,11 @@ import { apiClient } from './client'
 import type { CoreInformationPayload } from '@/components/person/personal/CoreInformationForm.vue'
 import type { DataVisibilityPayload } from '@/components/person/personal/DataVisibilityForm.vue'
 import type { PersonPhoto } from '@/components/person/personal/PhotoForm.vue'
+import type { ShortCvPayload } from '@/components/person/personal/ShortCvForm.vue'
+import type { PersonalContactsPayload } from '@/components/person/personal/PersonalContactsForm.vue'
+import type { PersonalUrl, PersonalUrlsPayload } from '@/components/person/personal/PersonalUrlsForm.vue'
+import type { OtherEditor, OtherEditorsPayload } from '@/components/person/personal/OtherEditorsForm.vue'
+import type { EmergencyContact, EmergencyContactsPayload } from '@/components/person/personal/EmergencyContactsForm.vue'
 import type { AcademicAffiliation, AcademicAffiliationsPayload } from '@/components/person/professional/AcademicAffiliationsForm.vue'
 import type { AcademicDegree, AcademicDegreesPayload } from '@/components/person/professional/AcademicDegreesForm.vue'
 import type { WorkplacePayload } from '@/components/person/professional/WorkPlacesForm.vue'
@@ -42,6 +47,62 @@ export async function uploadPhoto(personId: string, blob: Blob): Promise<PersonP
     const { data } = await apiClient.post<PersonPhoto>(`/api/people/${personId}/photo`, formData)
     return data
 }
+
+// Person Personal ShortCV
+export async function fetchShortCv(personId: number | string): Promise<ShortCvPayload> {
+    const { data } = await apiClient.get<ShortCvPayload>(`/api/people/${personId}/short-cv`)
+    return data
+}
+
+export async function updateShortCv(personId: string, payload: ShortCvPayload): Promise<ShortCvPayload> {
+    const { data } = await apiClient.put<ShortCvPayload>(`/api/people/${personId}/short-cv`, payload)
+    return data
+}
+
+// Person Personal URLs
+export async function fetchPersonalUrls(personId: number | string): Promise<PersonalUrlsPayload> {
+    const { data } = await apiClient.get<PersonalUrl[]>(`/api/people/${personId}/personal-urls`)
+    return {urls: data}
+}
+
+export async function updatePersonalUrls(personId: string, payload: PersonalUrlsPayload): Promise<PersonalUrlsPayload> {
+    const { data } = await apiClient.put<PersonalUrl[]>(`/api/people/${personId}/personal-urls`, payload)
+    return {urls: data}
+}
+
+// Person Personal Contacts
+export async function fetchPersonalContacts(personId: string): Promise<PersonalContactsPayload> {
+    const { data } = await apiClient.get<PersonalContactsPayload>(`/api/people/${personId}/personal-contacts`)
+    return data
+}
+
+export async function updatePersonalContacts(personId: string, payload: PersonalContactsPayload): Promise<PersonalContactsPayload> {
+    const { data } = await apiClient.put<PersonalContactsPayload>(`/api/people/${personId}/personal-contacts`, payload)
+    return data
+}
+
+// Person Emergency Contacts
+export async function fetchEmergencyContacts(personId: number | string): Promise<EmergencyContactsPayload> {
+    const { data } = await apiClient.get<EmergencyContact[]>(`/api/people/${personId}/emergency-contacts`)
+    return {contacts: data}
+}
+
+export async function updateEmergencyContacts(personId: string, payload: EmergencyContactsPayload): Promise<EmergencyContactsPayload> {
+    const { data } = await apiClient.put<EmergencyContact[]>(`/api/people/${personId}/emergency-contacts`, payload)
+    return {contacts: data}
+}
+
+// Person Other Editors
+export async function fetchOtherEditors(personId: number | string): Promise<OtherEditorsPayload> {
+    const { data } = await apiClient.get<OtherEditor[]>(`/api/people/${personId}/other-editors`)
+    return { editors: data }
+}
+
+export async function updateOtherEditors(personId: string, payload: OtherEditorsPayload): Promise<OtherEditorsPayload> {
+    const { data } = await apiClient.put<OtherEditor[]>(`/api/people/${personId}/other-editors`, payload)
+    return { editors: data }
+}
+
 
 // Person Professional/Academic
 export async function fetchAcademicAffiliations(personId: number | string): Promise<AcademicAffiliationsPayload> {

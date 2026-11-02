@@ -23,10 +23,18 @@ const lookups = {
     `,
     'academic-degrees':  `SELECT id, name_en AS name FROM degrees ORDER BY sort_order`,
     'supervisor-types':  `SELECT id, name_en AS name FROM supervisor_types ORDER BY sort_order`,
-    people:              `SELECT id, \`name\`
+    'people':            `SELECT id, \`name\`
                             FROM people
                             WHERE \`name\` IS NOT NULL AND visible_public = 1
+                            AND status = 1
                             ORDER BY \`name\``,
+    'users':             `SELECT users.id as user_id, people.name
+                            FROM users
+                            JOIN people ON people.user_id = users.id
+                            WHERE people.name IS NOT NULL AND people.visible_public = 1
+                            AND people.status = 1
+                            ORDER BY people.name`,
+
     'situations':        `SELECT id, name_en AS name, visible, sort_order FROM situations ORDER BY sort_order`,
     'situation-categories': `SELECT cs.id, cs.situation_id, c.name_en AS name,
                             (cs.visible AND c.visible) AS visible,
@@ -37,6 +45,8 @@ const lookups = {
     'fellowship-types':    `SELECT id, name FROM fellowship_types ORDER BY sort_order`,
     'management-entities': `SELECT id, COALESCE(NULLIF(short_name,''), official_name) AS name FROM management_entities ORDER BY sort_order`,
     'funding-agencies':    `SELECT id, official_name AS name FROM funding_agencies ORDER BY sort_order`,
+    'url-types': `SELECT id, type_en AS name FROM personal_url_types`,
+
 
 
 }

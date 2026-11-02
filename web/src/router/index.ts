@@ -15,6 +15,9 @@ import PersonSpaces from '@/pages/person/spaces/PersonSpaces.vue'
 import ResetPasswordView from '@/pages/person/ResetPasswordView.vue'
 import ManagerSection from '@/pages/manager/ManagerSection.vue'
 import ManagerMembers from '@/pages/manager/ManagerMembers.vue'
+import ValidateMembersPage from '@/pages/manager/ValidateMembersPage.vue'
+import ExportPage from '@/pages/manager/ExportPage.vue'
+import UnassignedMembersPage from '@/pages/manager/UnassignedMembersPage.vue'
 
 
 const router = createRouter({
@@ -83,6 +86,9 @@ const router = createRouter({
                 //help: PersonalTabHelp
             }
         },
+        { path: 'unassigned', component: UnassignedMembersPage },
+        { path: 'validate', component: ValidateMembersPage },
+        { path: 'export',   component: ExportPage },
       ]
     },
     {

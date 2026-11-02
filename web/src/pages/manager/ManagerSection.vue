@@ -5,9 +5,6 @@
     <v-alert v-else-if="managerStore.error" type="error" density="compact" class="ma-4">
         {{ managerStore.error }}
     </v-alert>
-    <v-alert v-else-if="managerStore.units.length === 0" type="info" density="compact" class="ma-4">
-        You don't currently manage any research units.
-    </v-alert>
     <template v-else>
         <v-tabs :model-value="route.path" color="primary" class="px-3">
             <v-tab
@@ -18,7 +15,18 @@
             >
                 {{ unit.name }}
             </v-tab>
+            <v-divider v-if="managerStore.units.length" vertical class="mx-2" />
+
+            <v-tab v-for="t in toolTabs" :key="t.to" :to="t.to" :value="t.to" :prepend-icon="t.icon">
+                {{ t.label }}
+            </v-tab>
         </v-tabs>
+        <v-alert
+            v-if="managerStore.units.length === 0 && route.path.startsWith('/manager/units')"
+            type="info" density="compact" class="ma-4"
+        >
+            You don't currently manage any research units.
+        </v-alert>
         <router-view></router-view>
     </template>
 </template>
@@ -32,10 +40,21 @@ const route = useRoute()
 const router = useRouter()
 const managerStore = useManagerStore()
 
+const toolTabs = [
+    { label: 'Unassigned', to: '/manager/unassigned', icon: 'mdi-account-question' },
+    { label: 'Validate', to: '/manager/validate', icon: 'mdi-account-check' },
+    { label: 'Export',   to: '/manager/export',   icon: 'mdi-file-excel' },
+]
+
 onMounted(async () => {
     await managerStore.loadUnits()
-    if (!route.params.unitSlug && managerStore.units.length > 0) {
-        router.replace(`/manager/units/${managerStore.units[0].slug}`)
+    // only redirect from the bare /manager URL
+    if (route.path.replace(/\/$/, '') === '/manager') {
+        router.replace(
+            managerStore.units.length
+                ? `/manager/units/${managerStore.units[0].slug}`
+                : '/manager/validate',
+        )
     }
 })
 </script>
