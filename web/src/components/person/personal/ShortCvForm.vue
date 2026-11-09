@@ -1,12 +1,13 @@
 <template>
-    <v-form @submit.prevent="() => onSubmit()">
+    <v-form @submit.prevent="() => onSubmit()" class="mt-4">
         <v-textarea
             v-model="shortCv"
             label="Short CV text"
             outlined
+            counter="2000"
             :error-messages="shortCvErrors"
         ></v-textarea >
-        <v-row>
+        <v-row class="mt-4" align="center">
             <v-col cols="12" md="10">
                 <v-alert v-if="error" type="error" density="compact" class="mb-4">
                     {{ error }}

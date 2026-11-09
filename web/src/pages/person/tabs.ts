@@ -1,7 +1,8 @@
 export const personTabs = [
     { key: 'personal',                 label: 'Personal' },
     { key: 'professional-academic',    label: 'Professional/Academic' },
-    //{ key: 'institutional-scientific', label: 'Institutional/Scientific' },
+    { key: 'institutional-scientific', label: 'Institutional/Scientific' },
+    { key: 'productivity',             label: 'Productivity' },
 ] as const
 
 export type PersonTabKey = typeof personTabs[number]['key']

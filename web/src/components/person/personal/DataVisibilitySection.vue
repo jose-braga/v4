@@ -3,6 +3,24 @@
     <v-card>
         <v-card-title>Data Visibility</v-card-title>
         <v-card-text>
+            <p class="text-body-2 mb-1">
+                Your data is used for the internal management of the research units and, if you make your profile visible,
+                to publicise their activities on the public website. You can access, correct or erase it at any time.
+            </p>
+            <p class="text-body-2 mb-2">
+                Switching on "Make my profile visible" means you consent to this use.
+                <v-btn
+                    variant="text" color="primary" size="small" class="px-1"
+                    prepend-icon="mdi-file-document-outline"
+                    @click="noticeOpen = true"
+                >
+                    Read full notice
+                </v-btn>
+                <PrivacyNoticeDialog v-model="noticeOpen" />
+            </p>
+
+
+            <!--
             <b>In accordance with the General Data Protection Regulation
             (EU) 2016/679, in force since 25 May, 2018, I have been
             informed that:</b>
@@ -31,6 +49,7 @@
                     <li>By saying YES, I consent the use of my personal data
                         for the above-mentioned purposes.</li>
                 </ul>
+                 -->
         </v-card-text>
 
         <v-card-text>
@@ -59,9 +78,12 @@ import type { DataVisibilityPayload } from './DataVisibilityForm.vue'
 import { fetchDataVisibility, updateDataVisibility } from '@/api/person'
 import { useEditableSection } from '@/composables/useEditableSection'
 import { useTargetPersonId, useIsOnBehalf } from '@/composables/useTargetPersonId'
+import { ref } from 'vue'
+import PrivacyNoticeDialog from '@/components/privacy/PrivacyNoticeDialog.vue'
 
 const personId = useTargetPersonId()
 const isOnBehalf = useIsOnBehalf()
+const noticeOpen = ref(false)
 
 const { data, loading, submitting, error, success, submit } = useEditableSection<DataVisibilityPayload>(
     () => fetchDataVisibility(personId.value),

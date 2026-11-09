@@ -15,6 +15,7 @@ import { registerPlugins } from '@/plugins'
 
 // Styles
 import 'unfonts.css'
+//import '@/styles/global.css'
 
 
 

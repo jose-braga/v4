@@ -1,5 +1,5 @@
 <template>
-    <v-form @submit.prevent="() => onSubmit()">
+    <v-form @submit.prevent="() => onSubmit()" class="mt-4">
         <v-text-field
             v-model="name"
             label="Full Name"
@@ -72,7 +72,7 @@
                 </v-btn>
             </v-col>
         </v-row>
-        
+
     </v-form>
 </template>
 

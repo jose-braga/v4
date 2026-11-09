@@ -12,6 +12,14 @@ import type { AcademicAffiliation, AcademicAffiliationsPayload } from '@/compone
 import type { AcademicDegree, AcademicDegreesPayload } from '@/components/person/professional/AcademicDegreesForm.vue'
 import type { WorkplacePayload } from '@/components/person/professional/WorkPlacesForm.vue'
 import type { Job, JobsPayload } from '@/components/person/professional/ProfessionalSituationForm.vue'
+import type { LabsPayload } from '@/components/person/institutional/LabPositionsForm.vue'
+import type { OfficesPayload } from '@/components/person/institutional/OfficeAffiliationsForm.vue'
+import type { Pole, PolesPayload } from '@/components/person/institutional/PolesForm.vue'
+import type { Supervisor, SupervisorsPayload } from '@/components/person/institutional/SupervisorsForm.vue'
+import type { ResearcherInfoPayload } from '@/components/person/institutional/ResearcherInfoForm.vue'
+import type { ContactPayload } from '@/components/person/institutional/ContactForm.vue'
+import type { ResearchInterest, ResearchInterestsPayload } from '@/components/person/institutional/ResearchInterestsForm.vue'
+import type { AuthorName, AuthorNamesPayload } from '@/components/person/productivity/AuthorNamesForm.vue'
 
 // Person Personal
 export async function fetchDataVisibility(personId: string): Promise<DataVisibilityPayload> {
@@ -148,3 +156,157 @@ export async function updateJobs(personId: string, payload: JobsPayload): Promis
     return { jobs: data }
 }
 
+
+// Person Institutional Affiliations
+
+export async function fetchPoles(personId: number | string): Promise<PolesPayload> {
+    const { data } = await apiClient.get<Pole[]>(`/api/people/${personId}/poles`)
+    return { poles: data }
+}
+
+export async function updatePoles(personId: string, payload: PolesPayload): Promise<PolesPayload> {
+    const { data } = await apiClient.put<Pole[]>(`/api/people/${personId}/poles`, payload)
+    return { poles: data }
+}
+
+export interface LabRow {
+    id: number
+    lab_id: number
+    lab_name: string
+    lab_position_id: number
+    lab_position_name: string | null
+    group_id: number | null
+    group_name: string | null
+    unit_id: number | null
+    unit_name: string | null
+    dedication: number | null
+    valid_from: string | null
+    valid_until: string | null
+    integrated: boolean
+    pluriannual: boolean
+    nuclearCV: boolean
+}
+
+export type OfficeKind = 'technician' | 'science_manager' | 'administrative'
+
+export const officeKindLabels: Record<OfficeKind, string> = {
+    technician: 'Technician',
+    science_manager: 'Science management',
+    administrative: 'Administrative',
+}
+export interface InstitutionalAffiliations {
+    labs: LabRow[]
+    offices: OfficeAffiliation[]
+    editable: boolean
+}
+export interface OfficeAffiliation {
+    id: number
+    kind: OfficeKind
+    office_id: number | null
+    office: string | null
+    position_id: number | null
+    position: string | null
+    unit_id: number | null
+    unit: string | null
+    dedication: number | null
+    valid_from: string | null
+    valid_until: string | null
+}
+
+const OFFICE_FIELDS: Record<OfficeKind, { raw: string; office_id: string; office: string; position_id: string; position: string }> = {
+    technician:      { raw: 'technician_data',       office_id: 'technician_office_id',      office: 'technician_office_name',      position_id: 'technician_position_id',      position: 'technician_position_name' },
+    science_manager: { raw: 'science_manager_data',  office_id: 'science_manager_office_id', office: 'science_manager_office_name', position_id: 'science_manager_position_id', position: 'science_manager_position_name' },
+    administrative:  { raw: 'administrative_data',   office_id: 'administrative_office_id',  office: 'administrative_office_name',  position_id: 'administrative_position_id',  position: 'administrative_position_name' },
+}
+
+
+function toInstitutional(raw: any): InstitutionalAffiliations {
+    const offices = (Object.keys(OFFICE_FIELDS) as OfficeKind[]).flatMap((kind) => {
+        const f = OFFICE_FIELDS[kind]
+        return (raw[f.raw] as any[]).map((r): OfficeAffiliation => ({
+            id: r.id, kind,
+            office_id: r[f.office_id] ?? null, office: r[f.office] ?? null,
+            position_id: r[f.position_id] ?? null, position: r[f.position] ?? null,
+            unit_id: r.unit_id ?? null, unit: r.unit_name ?? null,
+            dedication: r.dedication ?? null, valid_from: r.valid_from ?? null, valid_until: r.valid_until ?? null,
+        }))
+    })
+    return {
+        labs: raw.lab_data.map((r: any) => ({
+            ...r, integrated: !!r.integrated, pluriannual: !!r.pluriannual, nuclearCV: !!r.nuclearCV,
+        })),
+        offices,
+        editable: !!raw.editable,
+    }
+}
+export async function fetchInstitutionalAffiliations(personId: number) {
+    const { data } = await apiClient.get(`/api/people/${personId}/institutional-affiliations`)   // adjust the path/instance
+    return toInstitutional(data)
+}
+
+// the PUT should answer with the same body as the GET, so the form can reload from it
+export async function updateLabs(personId: number, payload: LabsPayload) {
+    const { data } = await apiClient.put(`/api/people/${personId}/institutional-affiliations/labs`, payload)
+    return toInstitutional(data)
+}
+
+export async function updateOffices(personId: number, payload: OfficesPayload) {
+    const { data } = await apiClient.put(`/api/people/${personId}/institutional-affiliations/offices`, payload)
+    return toInstitutional(data)
+}
+
+// Person Institutional Supervisors
+
+export async function fetchSupervisors(personId: number | string): Promise<SupervisorsPayload> {
+    const { data } = await apiClient.get<Supervisor[]>(`/api/people/${personId}/supervisors`)
+    return { supervisors: data }
+}
+
+export async function updateSupervisors(personId: string, payload: SupervisorsPayload): Promise<SupervisorsPayload> {
+    const { data } = await apiClient.put<Supervisor[]>(`/api/people/${personId}/supervisors`, payload)
+    return { supervisors: data }
+}
+
+// Person Institutional/Researcher Info
+export async function fetchResearcherInfo(personId: number | string): Promise<ResearcherInfoPayload> {
+    const { data } = await apiClient.get<ResearcherInfoPayload>(`/api/people/${personId}/researcher-info`)
+    return data
+}
+
+export async function updateResearcherInfo(personId: string, payload: ResearcherInfoPayload): Promise<ResearcherInfoPayload> {
+    const { data } = await apiClient.put<ResearcherInfoPayload>(`/api/people/${personId}/researcher-info`, payload)
+    return data
+}
+
+// Person Institutional/Contact
+export async function fetchContact(personId: number | string): Promise<ContactPayload> {
+    const { data } = await apiClient.get<ContactPayload>(`/api/people/${personId}/contacts`)
+    return data
+}
+
+export async function updateContact(personId: string, payload: ContactPayload): Promise<ContactPayload> {
+    const { data } = await apiClient.put<ContactPayload>(`/api/people/${personId}/contacts`, payload)
+    return data
+}
+
+// Person Institutional/Research Interests
+export async function fetchResearchInterests(personId: number | string): Promise<ResearchInterestsPayload> {
+    const { data } = await apiClient.get<ResearchInterest[]>(`/api/people/${personId}/research-interests`)
+    return { research_interests: data }
+}
+
+export async function updateResearchInterests(personId: string, payload: ResearchInterestsPayload): Promise<ResearchInterestsPayload> {
+    const { data } = await apiClient.put<ResearchInterest[]>(`/api/people/${personId}/research-interests`, payload)
+    return { research_interests: data }
+}
+
+// Person Productivity/Publications
+export async function fetchAuthorNames(personId: number | string): Promise<AuthorNamesPayload> {
+    const { data } = await apiClient.get<AuthorName[]>(`/api/people/${personId}/author-names`)
+    return { author_names: data }
+}
+
+export async function updateAuthorNames(personId: string, payload: AuthorNamesPayload): Promise<AuthorNamesPayload> {
+    const { data } = await apiClient.put<AuthorName[]>(`/api/people/${personId}/author-names`, payload)
+    return { author_names: data }
+}

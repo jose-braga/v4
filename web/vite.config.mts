@@ -25,6 +25,8 @@ export default defineConfig({
             weights: [100, 300, 400, 500, 700, 900],
             styles: ['normal', 'italic'],
           },
+           //{ name: 'Inter', weights: [400, 500, 600, 700], styles: ['normal'] },
+
         ],
       },
     }),

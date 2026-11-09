@@ -1,5 +1,5 @@
 <template>
-    <v-form @submit.prevent="() => onSubmit()">
+    <v-form @submit.prevent="() => onSubmit()" class="mt-4">
         <v-text-field
             v-model="workplace"
             label="Workplace"

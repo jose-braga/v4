@@ -23,7 +23,7 @@ export async function getPersonHierarchy(personId) {
 
          UNION
 
-        SELECT DISTINCT technicians.technician_office_id AS lab_id, 'technician_offices',
+        SELECT DISTINCT technicians.technician_office_id AS lab_id, 'technician_offices' AS node_type,
             NULL AS group_id, units.id AS unit_id
          FROM technicians
          JOIN technician_offices ON technician_offices.id = technicians.technician_office_id
@@ -33,7 +33,7 @@ export async function getPersonHierarchy(personId) {
 
          UNION
 
-        SELECT DISTINCT science_managers.science_manager_office_id AS lab_id, 'science_manager_offices',
+        SELECT DISTINCT science_managers.science_manager_office_id AS lab_id, 'science_manager_offices' AS node_type,
              NULL AS group_id, units.id AS unit_id
          FROM science_managers
          JOIN science_manager_offices ON science_manager_offices.id = science_managers.science_manager_office_id
@@ -43,7 +43,7 @@ export async function getPersonHierarchy(personId) {
 
          UNION
 
-        SELECT DISTINCT people_administrative_offices.administrative_office_id AS lab_id, 'administrative_offices',
+        SELECT DISTINCT people_administrative_offices.administrative_office_id AS lab_id, 'administrative_offices' AS node_type,
              NULL AS group_id, units.id AS unit_id
          FROM people_administrative_offices
          JOIN administrative_offices ON administrative_offices.id = people_administrative_offices.administrative_office_id
@@ -63,11 +63,12 @@ export async function getPersonHierarchy(personId) {
     chain.set(`people:${personId}`, { resourceType: 'people', resourceId: personId })
 
     for (const row of rows) {
-        chain.set(`${row.node_type}:${row.node_id}`, { resourceType: row.node_type, resourceId: row.node_id })
+        chain.set(`${row.node_type}:${row.lab_id}`, { resourceType: row.node_type, resourceId: row.lab_id })
         if (row.group_id != null)
             chain.set(`groups:${row.group_id}`, { resourceType: 'groups', resourceId: row.group_id })
         chain.set(`units:${row.unit_id}`, { resourceType: 'units', resourceId: row.unit_id })
     }
+    //console.log(chain)
     return [...chain.values()]
 }
 

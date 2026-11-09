@@ -30,3 +30,12 @@ import EmergencyContactsSection from '@/components/person/personal/EmergencyCont
 import OtherEditorsSection from '@/components/person/personal/OtherEditorsSection.vue'
 
 </script>
+
+<style scoped>
+.v-expansion-panels {
+    border: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
+}
+.v-expansion-panel {
+    box-shadow: none !important;
+}
+</style>

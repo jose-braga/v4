@@ -1,5 +1,5 @@
 <template>
-    <v-form @submit.prevent="() => onSubmit()">
+    <v-form @submit.prevent="() => onSubmit()" class="mt-4">
         <p v-if="fields.length === 0" class="text-medium-emphasis mb-4">
             No affiliations yet. Use the button below to add one.
         </p>

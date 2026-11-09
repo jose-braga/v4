@@ -37,15 +37,43 @@ const lookups = {
 
     'situations':        `SELECT id, name_en AS name, visible, sort_order FROM situations ORDER BY sort_order`,
     'situation-categories': `SELECT cs.id, cs.situation_id, c.name_en AS name,
-                            (cs.visible AND c.visible) AS visible,
-                            cs.sort_order
-                        FROM categories_situations cs
-                        JOIN categories c ON c.id = cs.category_id
-                        ORDER BY cs.sort_order`,
+                                (cs.visible AND c.visible) AS visible,
+                                cs.sort_order
+                            FROM categories_situations cs
+                            JOIN categories c ON c.id = cs.category_id
+                            ORDER BY cs.sort_order`,
     'fellowship-types':    `SELECT id, name FROM fellowship_types ORDER BY sort_order`,
     'management-entities': `SELECT id, COALESCE(NULLIF(short_name,''), official_name) AS name FROM management_entities ORDER BY sort_order`,
     'funding-agencies':    `SELECT id, official_name AS name FROM funding_agencies ORDER BY sort_order`,
-    'url-types': `SELECT id, type_en AS name FROM personal_url_types`,
+    'url-types':            `SELECT id, type_en AS name FROM personal_url_types`,
+    'labs':                 `SELECT l.id,
+                                CONCAT_WS(' · ',
+                                    CONCAT(IF(l.finished IS NOT NULL AND l.finished < CURDATE(), '(old) ', ''), l.name),
+                                    g.name, COALESCE(u.short_name, u.name)) AS name
+                            FROM labs l
+                            LEFT JOIN labs_groups lg ON lg.lab_id = l.id
+                                    AND (lg.valid_from  IS NULL OR lg.valid_from  <= CURDATE())
+                                    AND (lg.valid_until IS NULL OR lg.valid_until >= CURDATE())
+                            LEFT JOIN \`groups\` g ON g.id = lg.group_id
+                            LEFT JOIN groups_units gu ON gu.group_id = g.id
+                                    AND (gu.valid_from  IS NULL OR gu.valid_from  <= CURDATE())
+                                    AND (gu.valid_until IS NULL OR gu.valid_until >= CURDATE())
+                            LEFT JOIN units u ON u.id = gu.unit_id
+                            ORDER BY (l.finished IS NOT NULL AND l.finished < CURDATE()), u.name, g.name, l.sort_order, l.name`,
+    'units':                `SELECT id,
+                                    CONCAT(IF(finished IS NOT NULL AND finished < CURDATE(), '(old) ', ''),
+                                            COALESCE(NULLIF(short_name, ''), name)) AS name
+                                FROM units
+                            ORDER BY (finished IS NOT NULL AND finished < CURDATE()), name`,
+    'lab-positions':        `SELECT id, name_en AS name FROM lab_positions ORDER BY name_en`,
+    'poles':                `SELECT id, city AS name FROM institution_city ORDER BY city`,
+    'technician-offices':         `SELECT id, name_en AS name FROM technician_offices ORDER BY name_en`,
+    'technician-positions':       `SELECT id, name_en AS name FROM technician_positions ORDER BY name_en`,
+    'science-manager-offices':    `SELECT id, name_en AS name FROM science_manager_offices ORDER BY name_en`,
+    'science-manager-positions':  `SELECT id, name_en AS name FROM science_manager_positions ORDER BY name_en`,
+    'administrative-offices':     `SELECT id, name_en AS name FROM administrative_offices ORDER BY name_en`,
+    'administrative-positions':   `SELECT id, name_en AS name FROM administrative_positions ORDER BY name_en`,
+    'supervisor-types':       `SELECT id, name_en AS name FROM responsible_types ORDER BY name_en`,
 
 
 

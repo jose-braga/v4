@@ -14,3 +14,9 @@ export function fromIsoDateString(s: string | null | undefined): Date | null {
     const [y, m, d] = s.slice(0, 10).split('-').map(Number)
     return new Date(y, m - 1, d)
 }
+
+export function isCurrent(until: string | Date | null): boolean {
+    if (!until) return true
+    const day = typeof until === 'string' ? until.slice(0, 10) : toIsoDateString(until)
+    return day >= toIsoDateString(new Date())
+}

@@ -1,7 +1,7 @@
 <template>
     <v-app-bar
       class="border-bottom px-3"
-      color="white"
+      color="primary" height="80"
     >
       <v-app-bar-nav-icon @click="layoutStore.toggleDrawer()"></v-app-bar-nav-icon>
       <v-app-bar-title>{{ pageTitle }}</v-app-bar-title>
@@ -17,7 +17,7 @@
               <v-icon-btn
                 icon="mdi-login"
                 variant="text"
-                color="green"
+                color="light-green-lighten-3"
                 v-bind="mergeProps(menuProps, tooltipProps)"
               ></v-icon-btn>
             </template>
@@ -33,7 +33,9 @@
         <template v-slot:activator="{ props: menuProps }">
           <v-tooltip text="My account" location="bottom" :disabled="accountMenu">
             <template v-slot:activator="{ props: tooltipProps }">
-              <v-avatar v-bind="mergeProps(menuProps, tooltipProps)" style="cursor: pointer">
+              <v-avatar v-bind="mergeProps(menuProps, tooltipProps)" style="cursor: pointer"
+                size="x-large"
+              >
                 <v-img v-if="authStore.user?.photo_url" :src="authStore.user.photo_url" alt="User avatar"></v-img>
                 <v-icon v-else icon="mdi-account-circle" size="32"></v-icon>
               </v-avatar>
@@ -50,6 +52,7 @@
           <v-list-item
             title="Change Password"
             prepend-icon="mdi-key"
+            class="text-warning"
             @click="changePasswordError = ''; changePasswordDialog = true"
           ></v-list-item>
           <v-list-item
@@ -60,6 +63,7 @@
           <v-list-item
             title="Logout"
             prepend-icon="mdi-logout"
+            class="text-error"
             @click="handleLogout"
           ></v-list-item>
         </v-list>
@@ -68,7 +72,7 @@
         <template v-slot:activator="{ props }">
           <v-icon-btn id="help-icon"
               icon="mdi-help"
-              variant="text" color="blue"
+              variant="text" color="white"
               v-bind="props"
             ></v-icon-btn>
         </template>
@@ -141,6 +145,8 @@ async function handleLogout() {
 </script>
 
 <style scoped>
+
+
 #help-icon :deep(.v-icon) {
     animation-duration: 3s;
     animation-name: help-highlight;

@@ -2,6 +2,8 @@
 import { pool } from '../db.js'
 import { getPersonHierarchy, getUnitHierarchy } from '../utils/hierarchy.js'
 
+const MANAGER_CAPABILITIES_ID = 1
+const MANAGER_RES_TYPE_ID = 2
 
 const hierarchyResolvers = {
     people: getPersonHierarchy,
@@ -9,6 +11,54 @@ const hierarchyResolvers = {
     // later: groups: getGroupHierarchy, etc.
 }
 
+export async function isUnassigned(personId) {
+    try {
+        const [rows] = await pool.query(
+            `SELECT 1 FROM people_labs WHERE person_id = ?
+            UNION
+            SELECT 1 FROM technicians_units
+                JOIN technicians ON technicians.id = technicians_units.technician_id
+                WHERE technicians.person_id = ?
+            UNION
+            SELECT 1 FROM science_managers_units
+                JOIN science_managers ON science_managers.id = science_managers_units.science_manager_id
+                WHERE science_managers.person_id = ?
+            UNION
+            SELECT 1 FROM people_administrative_units
+                JOIN people_administrative_offices ON people_administrative_offices.id = people_administrative_units.administrative_id
+                WHERE people_administrative_offices.person_id = ?
+            LIMIT 1`,
+            [personId, personId, personId, personId]
+        )
+        return rows.length === 0
+
+    } catch (err) {
+        console.error('Permission check error:', err)
+        return false
+
+    }
+}
+
+async function isUnitManager(req, res) {
+    // Implementation for checking if person lab data is editable by the current user.
+    try {
+        const [rows] = await pool.query(
+            `SELECT *
+             FROM permissions_control
+             WHERE capability_id = ? AND resource_type_id = ? AND user_id = ?`,
+            [MANAGER_CAPABILITIES_ID, MANAGER_RES_TYPE_ID, req.user.id]
+        )
+        if (rows.length > 0) {
+            return true
+        }
+        return false
+    } catch (err) {
+        console.error('Permission check error:', err)
+        res.status(500).json({ message: 'Something went wrong - permissions check' })
+        return false
+    }
+
+}
 
 export function requireCapability(capability, resourceType, paramName, { allowSelf = true } = {}) {
     return async (req, res, next) => {
@@ -22,7 +72,7 @@ export function requireCapability(capability, resourceType, paramName, { allowSe
         }
 
         try {
-
+            // this works for people with labs assigned
             const resolver = hierarchyResolvers[resourceType]
             const chain = resolver ? await resolver(resourceId) : [{ resourceType, resourceId }]
 
@@ -55,8 +105,12 @@ export function requireCapability(capability, resourceType, paramName, { allowSe
                  LIMIT 1`,
                 [req.user.id, capability, ...params]
             )
-
+            //console.log('Permission check result:', rows)
             if (rows.length === 0) {
+                if (resourceType === 'people' && await isUnassigned(resourceId)
+                    && await isUnitManager(req, res) ) {
+                    return next()
+                }
                 return res.status(403).json({ message: 'You do not have permission to access or change that resource.' })
             }
             next()

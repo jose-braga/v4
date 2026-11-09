@@ -8,8 +8,8 @@
             <v-expansion-panel v-for="(field, i) in fields" :key="field.key" :value="field.key">
                 <v-expansion-panel-title>
                     <div class="d-flex align-center flex-wrap ga-2">
-                        <v-chip size="small" label :color="isCurrent(field.value) ? 'success' : undefined">
-                            {{ isCurrent(field.value) ? 'Current' : 'Past' }}
+                        <v-chip size="small" label :color="isCurrent(field.value.valid_until) ? 'success' : undefined">
+                            {{ isCurrent(field.value.valid_until) ? 'Current' : 'Past' }}
                         </v-chip>
                         <span class="font-weight-medium">{{ summary(field.value) }}</span>
                         <v-chip v-if="field.value.is_fellowship" size="small" label variant="outlined">Fellowship</v-chip>
@@ -117,7 +117,7 @@ import { useFieldArray, useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import { z } from 'zod'
 import { useLookup } from '@/composables/useLookup'
-import { toIsoDateString, fromIsoDateString } from '@/utils/date'
+import { toIsoDateString, fromIsoDateString, isCurrent } from '@/utils/date'
 
 // ---- Payload ---------------------------------------------------------------
 export interface Job {
@@ -251,9 +251,7 @@ function rowHasErrors(i: number) {
 function categoryItems(j: JobForm) {
     return withOldLabel(pairs.value.filter((p) => p.situation_id === j.situation_id))
 }
-function isCurrent(j: JobForm) {
-    return !j.valid_until || j.valid_until >= new Date()
-}
+
 function summary(j: JobForm) {
     const situation = situations.value.find((s: { id: number }) => s.id === j.situation_id)?.name
     const category = pairs.value.find((p) => p.id === j.category_situation_id)?.name

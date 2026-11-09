@@ -1,5 +1,11 @@
 <template>
-    <v-tabs :model-value="route.path" color="primary" class="px-3">
+    <v-tabs :model-value="route.path"
+        class="px-3 custom-tabs"
+        bg-color="deep-purple-lighten-5" slider-color="green"
+        color="primary" slider-transition="grow"
+        height="55"
+        show-arrows
+    >
         <v-tab
             v-for="t in tabs"
             :key="t.key"
@@ -24,3 +30,10 @@ const tabs = computed(() => [...personTabs, ...visibleSelfTabs(authStore.user)])
 
 const route = useRoute()
 </script>
+
+<style scoped>
+.custom-tabs :deep(.v-tab){
+    font-size: 1.0rem;
+    font-weight: 400;
+}
+</style>

@@ -10,6 +10,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import PersonSection from '@/pages/person/PersonSection.vue'
 import PersonPersonal from '@/pages/person/personal/PersonPersonal.vue'
 import PersonProfessional from '@/pages/person/professional/PersonProfessional.vue'
+import PersonInstitutional from '@/pages/person/institutional/PersonInstitutional.vue'
+import PersonProductivity from '@/pages/person/productivity/PersonProductivity.vue'
 import PersonWarehouse from '@/pages/person/warehouse/PersonWarehouse.vue'
 import PersonSpaces from '@/pages/person/spaces/PersonSpaces.vue'
 import ResetPasswordView from '@/pages/person/ResetPasswordView.vue'
@@ -51,8 +53,16 @@ const router = createRouter({
             path: 'institutional-scientific',
             meta: { title: 'Edit your institutional and scientific information' },
             components: {
-                default: PersonProfessional,
-                //help: ProfessionalTabHelp
+                default: PersonInstitutional,
+                //help: InsitutionalTabHelp
+            }
+        },
+        {
+            path: 'productivity',
+            meta: { title: 'Your productivity information' },
+            components: {
+                default: PersonProductivity,
+                //help: ProdctivityTabHelp
             }
         },
         {

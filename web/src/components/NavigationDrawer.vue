@@ -1,5 +1,7 @@
 <template>
-    <v-navigation-drawer v-model="layoutStore.isDrawerOpen">
+    <v-navigation-drawer v-model="layoutStore.isDrawerOpen"
+    
+    >
         <v-list nav
             color="primary"
             :selected="[activeItem]"
@@ -44,5 +46,7 @@ const activeItem = computed(() => {
 <style scoped>
 :deep(.v-list-item-title) {
     font-size: 1rem;
+    line-height: 1.6;       /* taller line box */
+    padding-bottom: 2px;    /* overflow:hidden clips at the padding edge, so this keeps the descenders */
 }
 </style>

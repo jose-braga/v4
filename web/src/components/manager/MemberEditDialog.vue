@@ -35,6 +35,7 @@ import { personTabs, type PersonTabKey } from '@/pages/person/tabs'
 import { managerOnlyTabs } from '@/components/manager/managerTabs'
 import PersonPersonal from '@/pages/person/personal/PersonPersonal.vue'
 import PersonProfessional from '@/pages/person/professional/PersonProfessional.vue'
+import PersonInstitutional from '@/pages/person/institutional/PersonInstitutional.vue'
 import PermissionsControl from '@/components/manager/PermissionsControl.vue'
 import UserSettings from '@/components/manager/UserSettings.vue'
 
@@ -53,7 +54,7 @@ const tabComponents: Record<DialogTabKey, Component> = {
     'user': UserSettings,
     'personal': PersonPersonal,
     'professional-academic': PersonProfessional,
-    //'institutional-scientific': PersonInstitutional,
+    'institutional-scientific': PersonInstitutional,
 }
 const tab = ref('personal')
 
