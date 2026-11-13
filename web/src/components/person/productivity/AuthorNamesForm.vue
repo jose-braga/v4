@@ -2,7 +2,9 @@
     <v-form @submit.prevent="() => onSubmit()">
         <p class="text-body-2 text-medium-emphasis mb-4">
             Write your name exactly as it appears in the author lists of your publications, for example
-            "Braga, J" or "José Braga". Add one entry for each form you use.
+            "Braga, J" or "José Braga". Add one entry for each variant you use.
+            Please list all variants of names used in publications,
+            as this will help in matching publications to their respective authors.
         </p>
 
         <p v-if="fields.length === 0" class="text-medium-emphasis mb-4">
@@ -10,8 +12,8 @@
         </p>
 
         <v-row >
-            <v-col cols="1" md="2" v-for="(field, i) in fields" :key="field.key">
-                <v-row  dense align="start">
+            <v-col cols="10" md="4" lg="3" xl="2" v-for="(field, i) in fields" :key="field.key">
+                <v-row dense align="start">
                     <v-col cols="10">
                         <v-text-field
                             v-model="field.value.name"
@@ -36,18 +38,21 @@
                     </v-col>
                 </v-row>
             </v-col>
-            <v-col cols="1" md="1" class="d-flex justify-end pt-md-3">
+            <v-col cols="2" md="2" lg="2">
+                <v-tooltip text="Add author name" location="top">
+                    <template #activator="{ props: tip }">
+                        <v-btn v-bind="tip" icon="mdi-plus" @click="addRow"></v-btn>
+                    </template>
+                </v-tooltip>
+
+
 
             </v-col>
         </v-row>
 
-        <div class="d-flex justify-space-between align-center mt-4">
-            <v-btn variant="outlined" prepend-icon="mdi-plus" @click="addRow">
-                Add an author name
-            </v-btn>
-        </div>
 
-        <v-row class="mt-6">
+
+        <v-row class="mt-2">
             <v-col cols="12" md="10">
                 <v-alert v-if="error" type="error" density="compact" class="mb-4">{{ error }}</v-alert>
                 <v-alert v-if="success" type="success" density="compact" class="mb-4">{{ success }}</v-alert>

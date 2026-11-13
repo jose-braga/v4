@@ -20,6 +20,7 @@ import type { ResearcherInfoPayload } from '@/components/person/institutional/Re
 import type { ContactPayload } from '@/components/person/institutional/ContactForm.vue'
 import type { ResearchInterest, ResearchInterestsPayload } from '@/components/person/institutional/ResearchInterestsForm.vue'
 import type { AuthorName, AuthorNamesPayload } from '@/components/person/productivity/AuthorNamesForm.vue'
+import type { PublicationUpdatePayload } from '@/components/person/productivity/PublicationEditDialog.vue'
 
 // Person Personal
 export async function fetchDataVisibility(personId: string): Promise<DataVisibilityPayload> {
@@ -309,4 +310,137 @@ export async function fetchAuthorNames(personId: number | string): Promise<Autho
 export async function updateAuthorNames(personId: string, payload: AuthorNamesPayload): Promise<AuthorNamesPayload> {
     const { data } = await apiClient.put<AuthorName[]>(`/api/people/${personId}/author-names`, payload)
     return { author_names: data }
+}
+
+export interface PersonPublication {
+    id: number
+    publication_id: number
+    author_type_id: number | null
+    position: number | null
+    public: 0 | 1
+    selected: 0 | 1
+    selected_rank: number | null
+    in_institutional_repository: 0 | 1
+    title: string
+    authors_raw: string | null
+    number_authors: number | null
+    journal_id: number | null
+    journal: string | null
+    journal_short_name: string | null
+    publication_type_id: number | null
+    volume: string | null
+    page_start: string | null
+    page_end: string | null
+    doi: string | null
+    wos: string | null
+    pubmed_id: string | null
+    publication_date: string | null
+    year: number | null
+    citations: number | null
+}
+
+export interface JournalOption {
+    id: number
+    name: string
+    short_name?: string | null
+    publisher?: string | null
+    issn?: string | null
+    eissn?: string | null
+}
+
+export async function fetchPersonPublications(personId: string): Promise<PersonPublication[]> {
+    const { data } = await apiClient.get(`/api/people/${personId}/publications`)
+    return data
+}
+
+export async function updatePersonPublication(
+    personId: string,
+    publicationId: number,
+    payload: PublicationUpdatePayload
+): Promise<PersonPublication> {
+    const { data } = await apiClient.put(`/api/people/${personId}/publications/${publicationId}`, payload)
+    return data
+}
+
+export async function dissociatePublication(personId: string, publicationId: number): Promise<void> {
+    await apiClient.delete(`/api/people/${personId}/publications/${publicationId}`)
+}
+
+export async function searchJournals(q: string): Promise<JournalOption[]> {
+    const { data } = await apiClient.get('/api/people/journals/search', { params: { q } })
+    return data
+}
+
+export interface PublicationSearchResult {
+    publication_id: number
+    title: string
+    authors_raw: string | null
+    year: number | null
+    doi: string | null
+    journal: string | null
+    journal_short_name: string | null
+}
+
+export async function searchPublications(personId: string, q: string): Promise<PublicationSearchResult[]> {
+    const { data } = await apiClient.get(`/api/people/${personId}/publications/search`, { params: { q } })
+    return data
+}
+
+export async function addPersonPublication(
+    personId: string,
+    publicationId: number,
+    authorTypeId: number | null
+): Promise<PersonPublication> {
+    const { data } = await apiClient.post(`/api/people/${personId}/publications/${publicationId}`, {
+        author_type_id: authorTypeId,
+    })
+    return data
+}
+
+export type ImportSource = 'orcid' | 'pure'
+
+export interface ImportCandidate {
+    source_id: string
+    title: string | null
+    authors_raw: string | null
+    journal_name: string | null
+    journal_id: number | null
+    issn: string | null
+    year: number | null
+    publication_date: string | null
+    volume: string | null
+    page_start: string | null
+    page_end: string | null
+    doi: string | null
+    pubmed_id: string | null
+    wos: string | null
+    work_type: string | null
+    detail_failed?: boolean
+}
+
+export interface ImportCandidatesResponse {
+    identifier: string | null
+    items: ImportCandidate[]
+    total: number
+    already_in_database: number
+    excluded_by_type?: number
+    excluded_types?: Record<string, number>
+}
+
+export async function fetchImportCandidates(personId: string, source: ImportSource): Promise<ImportCandidatesResponse> {
+    const { data } = await apiClient.get(`/api/people/${personId}/publications/${source}/candidates`)
+    return data
+}
+
+export async function importCandidate(
+    personId: string,
+    source: ImportSource,
+    publication: ImportCandidate,
+    authorTypeId: number | null
+): Promise<PersonPublication> {
+    const { data } = await apiClient.post(`/api/people/${personId}/publications/${source}/import`, {
+        publication,
+        author_type_id: authorTypeId,
+    })
+    return data
 }

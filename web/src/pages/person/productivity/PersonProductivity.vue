@@ -40,6 +40,7 @@
             <v-col v-if="active === 'publications'"
                 cols="12" md="9" xl="10">
                 <AuthorNamesSection class="mb-4"/>
+                <PersonPublicationsSection class="mb-4"/>
             </v-col>
             <v-col v-if="active === 'projects'"
                 cols="12" md="9" xl="10">
@@ -51,6 +52,8 @@
 
 <script setup lang="ts">
 import AuthorNamesSection from '@/components/person/productivity/AuthorNamesSection.vue'
+import PersonPublicationsSection from '@/components/person/productivity/PersonPublicationsSection.vue'
+
 
 import { computed, ref } from 'vue'
 import { useDisplay } from 'vuetify'

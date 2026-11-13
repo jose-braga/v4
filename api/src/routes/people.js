@@ -22,6 +22,11 @@ import { getContacts, updateContacts } from './controllers/people/institutional-
 import { getJobs, updateJobs } from './controllers/people/jobs.js'
 import { getResearchInterests, updateResearchInterests } from './controllers/people/research-interests.js'
 import { getAuthorNames, updateAuthorNames } from './controllers/people/publications.js'
+import { getPersonPublications, updatePersonPublication,
+     dissociatePublication, searchJournals
+} from './controllers/people/publications.js'
+import { searchPersonPublications, addPersonPublication } from './controllers/people/add-publications.js'
+import { getImportCandidates, importPublication } from './controllers/people/add-sources-publications.js'
 import multer from 'multer'
 
 const router = Router()
@@ -149,7 +154,7 @@ router.put('/:personId/jobs',
  */
 router.get('/:personId/poles',
     requireAuth, requireCapability('edit_people_data', 'people', 'personId'),  getPoles)
-// a person cannot edit their own poles, only managers can do that, so allowSelf is false
+
 router.put('/:personId/poles',
     requireAuth, requireCapability('edit_people_data', 'people', 'personId'),
     updatePoles)
@@ -172,7 +177,6 @@ router.put('/:personId/institutional-affiliations/offices',
 
 router.get('/:personId/supervisors',
     requireAuth, requireCapability('edit_people_data', 'people', 'personId'),  getResponsibles)
-// a person cannot edit their own poles, only managers can do that, so allowSelf is false
 router.put('/:personId/supervisors',
     requireAuth, requireCapability('edit_people_data', 'people', 'personId'),
     updateResponsibles)
@@ -183,7 +187,6 @@ router.put('/:personId/supervisors',
 
 router.get('/:personId/researcher-info',
     requireAuth, requireCapability('edit_people_data', 'people', 'personId'),  getResearcherInfo)
-// a person cannot edit their own poles, only managers can do that, so allowSelf is false
 router.put('/:personId/researcher-info',
     requireAuth, requireCapability('edit_people_data', 'people', 'personId'),
     updateResearcherInfo)
@@ -194,7 +197,6 @@ router.put('/:personId/researcher-info',
 
 router.get('/:personId/contacts',
     requireAuth, requireCapability('edit_people_data', 'people', 'personId'),  getContacts)
-// a person cannot edit their own poles, only managers can do that, so allowSelf is false
 router.put('/:personId/contacts',
     requireAuth, requireCapability('edit_people_data', 'people', 'personId'),
     updateContacts)
@@ -211,15 +213,37 @@ router.put('/:personId/research-interests',
     updateResearchInterests)
 
 /**
- * Institutional research interests endpoints
+ * Institutional publications endpoints
  */
 router.get('/:personId/author-names',
     requireAuth, requireCapability('edit_people_data', 'people', 'personId'),  getAuthorNames)
-// a person cannot edit their own research interests, only managers can do that, so allowSelf is false
 router.put('/:personId/author-names',
     requireAuth, requireCapability('edit_people_data', 'people', 'personId'),
     updateAuthorNames)
 
+
+router.get('/:personId/publications',
+    requireAuth, requireCapability('edit_people_data', 'people', 'personId'),  getPersonPublications)
+router.put('/:personId/publications/:publicationId',
+    requireAuth, requireCapability('edit_people_data', 'people', 'personId'),
+    updatePersonPublication)
+router.delete('/:personId/publications/:publicationId',
+    requireAuth, requireCapability('edit_people_data', 'people', 'personId'),
+    dissociatePublication)
+
+router.get('/journals/search', requireAuth, searchJournals)
+
+router.get('/:personId/publications/search',
+    requireAuth, requireCapability('edit_people_data', 'people', 'personId'),  searchPersonPublications)
+router.post('/:personId/publications/:publicationId',
+    requireAuth, requireCapability('edit_people_data', 'people', 'personId'),
+    addPersonPublication)
+
+router.get('/:personId/publications/:source/candidates',
+    requireAuth, requireCapability('edit_people_data', 'people', 'personId'),  getImportCandidates)
+router.post('/:personId/publications/:source/import',
+    requireAuth, requireCapability('edit_people_data', 'people', 'personId'),
+    importPublication)
 
 
 

@@ -74,6 +74,8 @@ const lookups = {
     'administrative-offices':     `SELECT id, name_en AS name FROM administrative_offices ORDER BY name_en`,
     'administrative-positions':   `SELECT id, name_en AS name FROM administrative_positions ORDER BY name_en`,
     'supervisor-types':       `SELECT id, name_en AS name FROM responsible_types ORDER BY name_en`,
+    'author-types':         `SELECT id, name_en AS name FROM author_types ORDER BY sort_order`,
+    'publication-types':    `SELECT id, name_en AS name FROM publication_types ORDER BY sort_order`,
 
 
 
